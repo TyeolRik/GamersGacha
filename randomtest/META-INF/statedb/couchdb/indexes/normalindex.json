@@ -1,0 +1,8 @@
+{
+    "index":{
+        "fields":["DocType","GameName","ServerName","CharacterName","RandomBoxName"]
+    },
+    "ddoc":"defaultDoc",
+    "name":"index1",
+    "type":"json"
+}

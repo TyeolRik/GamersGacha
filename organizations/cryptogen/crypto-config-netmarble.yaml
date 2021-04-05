@@ -1,0 +1,12 @@
+# crypto-config-netmarble.yaml
+PeerOrgs:
+  - Name: Netmarble
+    Domain: netmarble.example.com
+    EnableNodeOUs: true
+    Template:
+      Count: 3
+      SANS:
+        - "127.0.0.1"
+        - localhost
+    Users:
+      Count: 1

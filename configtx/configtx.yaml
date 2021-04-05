@@ -1,0 +1,180 @@
+# configtx.yaml
+---
+Organizations:
+    - &OrdererOrg
+        Name: OrdererOrg
+        ID: OrdererMSP
+        MSPDir: ../organizations/ordererOrganizations/gamersgacha.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Writers:
+                Type: Signature
+                Rule: "OR('OrdererMSP.member')"
+            Admins:
+                Type: Signature
+                Rule: "OR('OrdererMSP.admin')"
+        OrdererEndpoints:
+            - Gamers-Gacha.gamersgacha.com:7050
+    - &Nexon
+        Name: NexonMSP
+        ID: NexonMSP
+        MSPDir: ../organizations/peerOrganizations/nexon.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('NexonMSP.admin', 'NexonMSP.peer', 'NexonMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('NexonMSP.admin', 'NexonMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('NexonMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('NexonMSP.peer')"
+        AnchorPeers:
+          - Host: peer0.nexon.example.com
+            Port: 7051
+    - &Netmarble
+        Name: NetmarbleMSP
+        ID: NetmarbleMSP
+        MSPDir: ../organizations/peerOrganizations/netmarble.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('NetmarbleMSP.admin', 'NetmarbleMSP.peer', 'NetmarbleMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('NetmarbleMSP.admin', 'NetmarbleMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('NetmarbleMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('NetmarbleMSP.peer')"
+        AnchorPeers:
+          - Host: peer0.netmarble.example.com
+            Port: 9051
+    - &NCsoft
+        Name: NCsoftMSP
+        ID: NCsoftMSP
+        MSPDir: ../organizations/peerOrganizations/ncsoft.example.com/msp
+        Policies:
+            Readers:
+                Type: Signature
+                Rule: "OR('NCsoftMSP.admin', 'NCsoftMSP.peer', 'NCsoftMSP.client')"
+            Writers:
+                Type: Signature
+                Rule: "OR('NCsoftMSP.admin', 'NCsoftMSP.client')"
+            Admins:
+                Type: Signature
+                Rule: "OR('NCsoftMSP.admin')"
+            Endorsement:
+                Type: Signature
+                Rule: "OR('NCsoftMSP.peer')"
+        AnchorPeers:
+          - Host: peer0.ncsoft.example.com
+            Port: 11051
+
+Capabilities:
+    Channel: &ChannelCapabilities
+        V2_0: true
+    Orderer: &OrdererCapabilities
+        V2_0: true
+    Application: &ApplicationCapabilities
+        V2_0: true
+
+Application: &ApplicationDefaults
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        LifecycleEndorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+        Endorsement:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Endorsement"
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+    OrdererType: etcdraft
+    Addresses:
+        - Gamers-Gacha.gamersgacha.com:7050
+    EtcdRaft:
+        Consenters:
+        - Host: Gamers-Gacha.gamersgacha.com
+          Port: 7050
+          ClientTLSCert: ../organizations/ordererOrganizations/gamersgacha.com/orderers/Gamers-Gacha.gamersgacha.com/tls/server.crt
+          ServerTLSCert: ../organizations/ordererOrganizations/gamersgacha.com/orderers/Gamers-Gacha.gamersgacha.com/tls/server.crt
+    BatchTimeout: 2s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+    Organizations:
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+    ThreeOrgsOrdererGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            GameCompanyConsortium:
+                Organizations:
+                    - *Nexon
+                    - *Netmarble
+                    - *NCsoft
+    ThreeOrgsChannel:
+        Consortium: GameCompanyConsortium
+        <<: *ChannelDefaults
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *Nexon
+                - *Netmarble
+                - *NCsoft
+            Capabilities:
+                <<: *ApplicationCapabilities

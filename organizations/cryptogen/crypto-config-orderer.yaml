@@ -1,0 +1,10 @@
+# crypto-config-orderer.yaml
+OrdererOrgs:
+  - Name: Gamers-Gacha
+    Domain: gamersgacha.com
+    EnableNodeOUs: true
+    Specs:
+      - Hostname: Gamers-Gacha
+        SANS:
+          - "127.0.0.1"
+          - localhost
