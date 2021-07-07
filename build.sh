@@ -4,6 +4,15 @@
 # This script is for fast testing #
 ###################################
 
+
+# Remove Docker containers
+docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q) && echo "Docker Container removing SUCCESS"
+docker volume prune --force && echo "Docker Volume Pruning SUCCESS"
+
+# Initialize Version
+# curl -sSL https://bit.ly/2ysbOFE | bash -s -- 2.3.1 1.4.9
+# cd fabric-samples
+
 Hostname="Gamers-Gacha.gamersgacha.com"
 export CHANNEL_NAME="test-net1"
 export ORDERER_ADDRESS="Gamers-Gacha.gamersgacha.com:7050"
@@ -11,10 +20,6 @@ export ORDERER_CA=${PWD}/organizations/ordererOrganizations/gamersgacha.com/orde
 
 CHAINCODE_NAME="randomtest"
 CHAINCODE_VERSION=1
-
-# Remove Docker containers
-docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q) && echo "Docker Container removing SUCCESS"
-docker volume prune --force && echo "Docker Volume Pruning SUCCESS"
 
 # Remove certificates if it already exists
 rm -rf ./channel-artifacts

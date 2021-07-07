@@ -32,7 +32,7 @@ if [ $input -eq 1 ] ; then
     peer chaincode query -C test-net1 -n randomtest -c '{"Args":["GetAllRandomBox"]}'
 fi
 
-if [ $input == "open" ] ; then
+if [ $input -eq 2 ] ; then
     peer chaincode invoke \
         -o localhost:7050 \
         --ordererTLSHostnameOverride Gamers-Gacha.gamersgacha.com \
